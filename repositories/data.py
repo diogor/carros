@@ -1,24 +1,16 @@
-from sqlmodel import create_engine, Session, SQLModel
-from sqlmodel.main import SQLModelMetaclass
-from config.settings import get_settings
-
-engine = create_engine(get_settings().database_url)
-SQLModel.metadata.create_all(engine)
-
-
-def get_session():
-    with Session(engine) as session:
-        yield session
+from sqlmodel import Session, SQLModel, select
+from database.sqlmodel import DATABASE_ENGINE
 
 
 class SQLModelRepository:
-    _model: SQLModelMetaclass
-    _session: Session
+    def add(self, model: SQLModel) -> None:
+        with Session(DATABASE_ENGINE) as session:
+            session.add(model)
+            session.commit()
+            session.refresh(model)
 
-    def __init__(self, session: Session):
-        self._session = session
-
-    def add(self):
-        self._session.add(self._model)
-        self._session.commit()
-        self._session.refresh(self._model)
+    def get_all(self, model: SQLModel) -> list[SQLModel]:
+        with Session(DATABASE_ENGINE) as session:
+            statement = select(model)
+            results = session.exec(statement).all()
+            return results

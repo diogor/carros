@@ -9,7 +9,7 @@ ENV POETRY_NO_INTERACTION=1 \
 
 WORKDIR /app
 
-COPY app/ config/ domain/ models/ repositories/ pyproject.toml /app/
+COPY app/ config/ database/ domain/ models/ repositories/ services/ pyproject.toml /app/
 
 RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev --no-root
 

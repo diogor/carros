@@ -1,8 +1,9 @@
 from fastapi import FastAPI
+from database.sqlmodel import setup_database
+from .routes import veiculos_router
 
 app = FastAPI()
 
+setup_database()
 
-@app.get("/", response_model=str)
-async def jogo() -> str:
-    return "Hello, World"
+app.include_router(veiculos_router)
