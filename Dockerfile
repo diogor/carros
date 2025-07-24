@@ -9,7 +9,7 @@ ENV POETRY_NO_INTERACTION=1 \
 
 WORKDIR /app
 
-COPY . .
+COPY app/ config/ domain/ models/ repositories/ pyproject.toml /app/
 
 RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --without dev --no-root
 
@@ -20,6 +20,6 @@ ENV VIRTUAL_ENV=/app/.venv \
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
-COPY . .
+COPY --from=builder / .
 
-ENTRYPOINT ["granian", "--interface", "asgi", "app.web.server:app", "--port", "8080", "--host", "0.0.0.0"]
+ENTRYPOINT ["granian", "--interface", "asgi", "app.api.server:app", "--port", "8080", "--host", "0.0.0.0"]
