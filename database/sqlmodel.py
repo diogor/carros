@@ -3,7 +3,7 @@ from sqlalchemy.engine import Engine
 from sqlmodel import Session, create_engine, SQLModel
 from config.settings import get_settings
 
-DATABASE_ENGINE = create_engine(get_settings().database_url, echo=True)
+DATABASE_ENGINE = create_engine(get_settings().database_url)
 
 
 def setup_database() -> Engine:

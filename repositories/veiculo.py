@@ -1,20 +1,44 @@
+from typing import Dict, Optional, Union
 from sqlmodel import func, select
+from sqlmodel.sql.expression import Select, SelectOfScalar
 from models.veiculo import Veiculo
 from .base import BaseRepository
 
 
 class VeiculoRepository(BaseRepository):
+    def __select(
+        self, filters: Optional[Dict[str, str | int | list | bool]]
+    ) -> Union[Select, SelectOfScalar]:
+        statement = select(Veiculo)
+        filters = {k: v for k, v in filters.items() if v is not None} if filters else {}
+        if filters:
+            for key, value in filters.items():
+                if isinstance(value, list):
+                    statement = statement.where(getattr(Veiculo, key).in_(value))
+                else:
+                    statement = statement.where(getattr(Veiculo, key) == value)
+        return statement
+
     def add(self, model: Veiculo) -> None:
         self.session.add(model)
         self.session.commit()
         self.session.refresh(model)
 
-    def get(self, page: int = 1, size: int = 20) -> tuple[list[Veiculo], int]:
-        count = self.session.exec(select(func.count()).select_from(Veiculo)).one()
+    def get(
+        self,
+        page: int = 1,
+        size: int = 20,
+        filters: Optional[Dict[str, str | int | list]] = None,
+    ) -> tuple[list[Veiculo], int]:
         limit = size * page
         offset = size * (page - 1)
-        statement = select(Veiculo).limit(limit).offset(offset)
-        result = self.session.exec(statement)
+        statement = self.__select(filters)
+
+        count = self.session.exec(
+            select(func.count()).select_from(statement.alias())
+        ).one()
+
+        result = self.session.exec(statement.limit(limit).offset(offset))
         return ([veiculo for veiculo in result.all()], count)
 
     def get_by_id(self, id: int) -> Veiculo | None:

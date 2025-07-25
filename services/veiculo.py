@@ -1,3 +1,4 @@
+from typing import Dict, Optional
 from sqlmodel import Session
 from domain.entities import VeiculoCreate, VeiculoDetail, VeiculoList
 from domain.exceptions import VEICULO_NOT_FOUND_ERROR, NotFoundError
@@ -29,8 +30,13 @@ class VeiculoService:
             updated=veiculo_model.updated,
         )
 
-    def get(self, page: int = 1, size: int = 20) -> tuple[list[VeiculoList], int]:
-        result = self.veiculo_repository.get(page, size)
+    def get(
+        self,
+        page: int = 1,
+        size: int = 20,
+        filters: Optional[Dict[str, str | int | list | bool]] = None,
+    ) -> tuple[list[VeiculoList], int]:
+        result = self.veiculo_repository.get(page, size, filters)
         veiculos = [
             VeiculoList(
                 id=veiculo.id,

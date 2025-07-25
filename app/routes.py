@@ -1,6 +1,7 @@
-from typing import Annotated
+from typing import Annotated, Optional
 from fastapi import Depends, Query
 from fastapi.routing import APIRouter
+from pydantic import BaseModel
 from sqlmodel import Session
 
 from domain.entities import PaginatedResponse, VeiculoCreate, VeiculoDetail, VeiculoList
@@ -11,19 +12,43 @@ from database.sqlmodel import get_session
 veiculos_router = APIRouter(prefix="/veiculos", tags=["Veículos"])
 
 
+class FilterQuery(BaseModel):
+    model_config = {"extra": "forbid"}
+
+    page: int = Query(1, ge=1)
+    size: int = Query(20, ge=1)
+    veiculo: str = Query(None)
+    marca: str = Query(None)
+    ano: int = Query(None)
+    descricao: str = Query(None)
+    vendido: bool = Query(None)
+
+
 @veiculos_router.get("/", response_model=PaginatedResponse[VeiculoList])
 async def list_veiculos(
     db_session: Annotated[Session, Depends(get_session)],
-    page: int = Query(1, ge=1),
-    size: int = Query(20, ge=1),
+    query: Annotated[FilterQuery, Query()],
 ) -> PaginatedResponse[VeiculoList]:
     service = VeiculoService(db_session=db_session)
-    veiculos = service.get(page=page, size=size)
+
+    veiculos = service.get(
+        page=query.page,
+        size=query.size,
+        filters={
+            "veiculo": query.veiculo,
+            "marca": query.marca,
+            "ano": query.ano,
+            "descricao": query.descricao,
+            "vendido": query.vendido,
+        },
+    )
+
     paginated_response = PaginatedResponse[VeiculoList](
         items=veiculos[0],
         total=veiculos[1],
-        pages=(veiculos[1] + size - 1) // size,
+        pages=(veiculos[1] + query.size - 1) // query.size,
     )
+
     return paginated_response
 
 
