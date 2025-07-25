@@ -1,3 +1,4 @@
+from domain.entities import VeiculoCreate, VeiculoDetail, VeiculoList
 from models.veiculo import Veiculo
 from repositories.veiculo import VeiculoRepository
 
@@ -6,8 +7,36 @@ class VeiculoService:
     def __init__(self):
         self.veiculo_repository = VeiculoRepository()
 
-    def add(self, veiculo: Veiculo):
-        self.veiculo_repository.add(veiculo)
+    def add(self, veiculo: VeiculoCreate) -> VeiculoDetail:
+        veiculo_model = Veiculo(
+            veiculo=veiculo.veiculo,
+            marca=veiculo.marca,
+            ano=veiculo.ano,
+            descricao=veiculo.descricao,
+            vendido=veiculo.vendido,
+        )
+        self.veiculo_repository.add(veiculo_model)
+        return VeiculoDetail(
+            id=veiculo_model.id,
+            veiculo=veiculo_model.veiculo,
+            marca=veiculo_model.marca,
+            ano=veiculo_model.ano,
+            descricao=veiculo_model.descricao,
+            vendido=veiculo_model.vendido,
+            created=veiculo_model.created,
+            updated=veiculo_model.updated,
+        )
 
-    def get(self, page: int = 1, size: int = 20) -> tuple[list[Veiculo], int]:
-        return self.veiculo_repository.get(page, size)
+    def get(self, page: int = 1, size: int = 20) -> tuple[list[VeiculoList], int]:
+        result = self.veiculo_repository.get(page, size)
+        veiculos = [
+            VeiculoList(
+                id=veiculo.id,
+                veiculo=veiculo.veiculo,
+                marca=veiculo.marca,
+                ano=veiculo.ano,
+            )
+            for veiculo in result[0]
+        ]
+        total = result[1]
+        return veiculos, total

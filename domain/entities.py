@@ -1,4 +1,5 @@
-from typing import Generic, TypeVar
+from datetime import datetime
+from typing import Generic, Optional, TypeVar
 from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
 
@@ -12,7 +13,7 @@ class PaginatedResponse(GenericModel, Generic[M]):
 
 
 class VeiculoList(BaseModel):
-    id: int
+    id: Optional[int]
     veiculo: str = Field(max_length=100)
     marca: str = Field(max_length=50)
     ano: int
@@ -21,8 +22,8 @@ class VeiculoList(BaseModel):
 class VeiculoDetail(VeiculoList):
     descricao: str = Field(max_length=200)
     vendido: bool
-    created: str
-    updated: str | None
+    created: datetime | None
+    updated: datetime | None
 
 
 class VeiculoCreate(BaseModel):

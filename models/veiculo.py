@@ -10,5 +10,7 @@ class Veiculo(SQLModel, table=True):
     ano: int = Field()
     descricao: str = Field(max_length=200)
     vendido: bool = Field(default=False)
-    created: datetime = Field(default=datetime.now(timezone.utc), nullable=False)
-    updated: datetime = Field(nullable=True)
+    created: Optional[datetime] = Field(
+        default=datetime.now(timezone.utc), nullable=False
+    )
+    updated: Optional[datetime] = Field(default=None, nullable=True)

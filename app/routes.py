@@ -1,7 +1,7 @@
 from fastapi import Query
 from fastapi.routing import APIRouter
 
-from domain.entities import PaginatedResponse, VeiculoList
+from domain.entities import PaginatedResponse, VeiculoCreate, VeiculoDetail, VeiculoList
 from services.veiculo import VeiculoService
 
 
@@ -20,3 +20,9 @@ async def list_veiculos(
         pages=(veiculos[1] + size - 1) // size,
     )
     return paginated_response
+
+
+@veiculos_router.post("/", response_model=VeiculoDetail)
+async def create_veiculo(veiculo: VeiculoCreate) -> VeiculoDetail:
+    service = VeiculoService()
+    return service.add(veiculo)
