@@ -1,7 +1,13 @@
 from typing import Dict, Optional
 from sqlmodel import Session
 from sqlalchemy.exc import NoResultFound
-from domain.entities import VeiculoCreate, VeiculoDetail, VeiculoList, VeiculoUpdate
+from domain.entities import (
+    VeiculoCreate,
+    VeiculoDetail,
+    VeiculoList,
+    VeiculoPartialUpdate,
+    VeiculoUpdate,
+)
 from domain.exceptions import VEICULO_NOT_FOUND_ERROR, NotFoundError
 from models.veiculo import Veiculo
 from repositories.veiculo import VeiculoRepository
@@ -51,7 +57,10 @@ class VeiculoService:
         return veiculos, total
 
     def update(
-        self, id: int, veiculo: VeiculoUpdate, patch: bool = False
+        self,
+        id: int,
+        veiculo: VeiculoUpdate | VeiculoPartialUpdate,
+        patch: bool = False,
     ) -> VeiculoDetail:
         try:
             veiculo_model = self.veiculo_repository.update(id, veiculo, patch)
@@ -65,6 +74,16 @@ class VeiculoService:
                 created=veiculo_model.created,
                 updated=veiculo_model.updated,
             )
+        except NoResultFound:
+            raise NotFoundError(
+                f"Veículo com ID {id} não encontrado.",
+                code=VEICULO_NOT_FOUND_ERROR,
+                status_code=404,
+            )
+
+    def delete(self, id: int) -> None:
+        try:
+            self.veiculo_repository.delete(id)
         except NoResultFound:
             raise NotFoundError(
                 f"Veículo com ID {id} não encontrado.",

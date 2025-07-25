@@ -57,6 +57,13 @@ class VeiculoRepository(BaseRepository):
         self.session.refresh(obj)
         return obj
 
+    def delete(self, id: int) -> None:
+        statement = select(Veiculo).where(Veiculo.id == id)
+        result = self.session.exec(statement)
+        veiculo = result.one()
+        self.session.delete(veiculo)
+        self.session.commit()
+
     def get_by_id(self, id: int) -> Veiculo | None:
         statement = select(Veiculo).where(Veiculo.id == id)
         result = self.session.exec(statement)

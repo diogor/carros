@@ -105,3 +105,16 @@ async def patch_veiculo(
 ) -> VeiculoDetail:
     service = VeiculoService(db_session=db_session)
     return service.update(id, veiculo, patch=True)
+
+
+@veiculos_router.delete(
+    "/{id}",
+    status_code=204,
+    responses={404: {"description": "Veículo não encontrado"}},
+)
+async def delete_veiculo(
+    db_session: Annotated[Session, Depends(get_session)], id: int
+) -> None:
+    service = VeiculoService(db_session=db_session)
+    service.delete(id)
+    return None
