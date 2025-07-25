@@ -8,8 +8,6 @@ M = TypeVar("M")
 class PaginatedResponse(GenericModel, Generic[M]):
     total: int
     pages: int
-    next: int | None
-    previous: int | None
     items: list[M]
 
 

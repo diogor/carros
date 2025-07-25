@@ -9,5 +9,5 @@ class VeiculoService:
     def add(self, veiculo: Veiculo):
         self.veiculo_repository.add(veiculo)
 
-    def get_all(self):
-        return self.veiculo_repository.get_all()
+    def get(self, page: int = 1, size: int = 20) -> tuple[list[Veiculo], int]:
+        return self.veiculo_repository.get(page, size)
