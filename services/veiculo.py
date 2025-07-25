@@ -1,3 +1,4 @@
+from sqlmodel import Session
 from domain.entities import VeiculoCreate, VeiculoDetail, VeiculoList
 from domain.exceptions import VEICULO_NOT_FOUND_ERROR, NotFoundError
 from models.veiculo import Veiculo
@@ -5,8 +6,8 @@ from repositories.veiculo import VeiculoRepository
 
 
 class VeiculoService:
-    def __init__(self):
-        self.veiculo_repository = VeiculoRepository()
+    def __init__(self, db_session: Session):
+        self.veiculo_repository = VeiculoRepository(session=db_session)
 
     def add(self, veiculo: VeiculoCreate) -> VeiculoDetail:
         veiculo_model = Veiculo(
