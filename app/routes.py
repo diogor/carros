@@ -9,6 +9,7 @@ from domain.entities import (
     VeiculoCreate,
     VeiculoDetail,
     VeiculoList,
+    VeiculoPartialUpdate,
     VeiculoUpdate,
 )
 from services.veiculo import VeiculoService
@@ -90,3 +91,17 @@ async def update_veiculo(
 ) -> VeiculoDetail:
     service = VeiculoService(db_session=db_session)
     return service.update(id, veiculo)
+
+
+@veiculos_router.patch(
+    "/{id}",
+    response_model=VeiculoDetail,
+    responses={404: {"description": "Veículo não encontrado"}},
+)
+async def patch_veiculo(
+    db_session: Annotated[Session, Depends(get_session)],
+    id: int,
+    veiculo: VeiculoPartialUpdate,
+) -> VeiculoDetail:
+    service = VeiculoService(db_session=db_session)
+    return service.update(id, veiculo, patch=True)

@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from typing import Dict, Optional, Union
 from sqlmodel import func, select
 from sqlmodel.sql.expression import Select, SelectOfScalar
-from domain.entities import VeiculoUpdate
+from domain.entities import VeiculoPartialUpdate, VeiculoUpdate
 from models.veiculo import Veiculo
 from .base import BaseRepository
 
@@ -43,7 +43,9 @@ class VeiculoRepository(BaseRepository):
         result = self.session.exec(statement.limit(limit).offset(offset))
         return ([veiculo for veiculo in result.all()], count)
 
-    def update(self, id: int, model: VeiculoUpdate, patch: bool = False) -> Veiculo:
+    def update(
+        self, id: int, model: VeiculoUpdate | VeiculoPartialUpdate, patch: bool = False
+    ) -> Veiculo:
         obj = self.session.exec(select(Veiculo).where(Veiculo.id == id)).one()
         for key, value in model.model_dump(exclude_unset=patch).items():
             setattr(obj, key, value)
