@@ -59,7 +59,7 @@ async def list_veiculos(
     return paginated_response
 
 
-@veiculos_router.post("/", response_model=VeiculoDetail)
+@veiculos_router.post("/", response_model=VeiculoDetail, status_code=201)
 async def create_veiculo(
     db_session: Annotated[Session, Depends(get_session)], veiculo: VeiculoCreate
 ) -> VeiculoDetail:
