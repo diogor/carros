@@ -16,3 +16,8 @@ class VeiculoRepository(BaseRepository):
         statement = select(Veiculo).limit(limit).offset(offset)
         result = self.session.exec(statement)
         return ([veiculo for veiculo in result.all()], count)
+
+    def get_by_id(self, id: int) -> Veiculo | None:
+        statement = select(Veiculo).where(Veiculo.id == id)
+        result = self.session.exec(statement)
+        return result.one_or_none()

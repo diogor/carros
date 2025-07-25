@@ -1,4 +1,5 @@
 from domain.entities import VeiculoCreate, VeiculoDetail, VeiculoList
+from domain.exceptions import VEICULO_NOT_FOUND_ERROR, NotFoundError
 from models.veiculo import Veiculo
 from repositories.veiculo import VeiculoRepository
 
@@ -40,3 +41,22 @@ class VeiculoService:
         ]
         total = result[1]
         return veiculos, total
+
+    def get_by_id(self, id: int) -> VeiculoDetail:
+        veiculo = self.veiculo_repository.get_by_id(id)
+        if veiculo:
+            return VeiculoDetail(
+                id=veiculo.id,
+                veiculo=veiculo.veiculo,
+                marca=veiculo.marca,
+                ano=veiculo.ano,
+                descricao=veiculo.descricao,
+                vendido=veiculo.vendido,
+                created=veiculo.created,
+                updated=veiculo.updated,
+            )
+        raise NotFoundError(
+            f"Veículo com ID {id} não encontrado.",
+            code=VEICULO_NOT_FOUND_ERROR,
+            status_code=404,
+        )

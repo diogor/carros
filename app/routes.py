@@ -26,3 +26,9 @@ async def list_veiculos(
 async def create_veiculo(veiculo: VeiculoCreate) -> VeiculoDetail:
     service = VeiculoService()
     return service.add(veiculo)
+
+
+@veiculos_router.get("/{id}", response_model=VeiculoDetail)
+async def get_veiculo(id: int) -> VeiculoDetail | None:
+    service = VeiculoService()
+    return service.get_by_id(id)
