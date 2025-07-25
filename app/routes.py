@@ -4,7 +4,13 @@ from fastapi.routing import APIRouter
 from pydantic import BaseModel
 from sqlmodel import Session
 
-from domain.entities import PaginatedResponse, VeiculoCreate, VeiculoDetail, VeiculoList
+from domain.entities import (
+    PaginatedResponse,
+    VeiculoCreate,
+    VeiculoDetail,
+    VeiculoList,
+    VeiculoUpdate,
+)
 from services.veiculo import VeiculoService
 from database.sqlmodel import get_session
 
@@ -70,3 +76,17 @@ async def get_veiculo(
 ) -> VeiculoDetail | None:
     service = VeiculoService(db_session=db_session)
     return service.get_by_id(id)
+
+
+@veiculos_router.put(
+    "/{id}",
+    response_model=VeiculoDetail,
+    responses={404: {"description": "Veículo não encontrado"}},
+)
+async def update_veiculo(
+    db_session: Annotated[Session, Depends(get_session)],
+    id: int,
+    veiculo: VeiculoUpdate,
+) -> VeiculoDetail:
+    service = VeiculoService(db_session=db_session)
+    return service.update(id, veiculo)

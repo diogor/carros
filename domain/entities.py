@@ -32,3 +32,11 @@ class VeiculoCreate(BaseModel):
     ano: int
     descricao: str = Field(max_length=200)
     vendido: bool = False
+
+
+class VeiculoUpdate(BaseModel):
+    descricao: Optional[str] = Field(max_length=200, default=None)
+    vendido: Optional[bool] = None
+    veiculo: str = Field(max_length=100)
+    marca: str = Field(max_length=50)
+    ano: int
