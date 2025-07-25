@@ -28,7 +28,11 @@ async def create_veiculo(veiculo: VeiculoCreate) -> VeiculoDetail:
     return service.add(veiculo)
 
 
-@veiculos_router.get("/{id}", response_model=VeiculoDetail)
+@veiculos_router.get(
+    "/{id}",
+    response_model=VeiculoDetail,
+    responses={404: {"description": "Veículo não encontrado"}},
+)
 async def get_veiculo(id: int) -> VeiculoDetail | None:
     service = VeiculoService()
     return service.get_by_id(id)
